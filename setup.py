@@ -1,4 +1,4 @@
-"""Package builder for FIXME."""
+"""Package builder for htma_py."""
 
 import setuptools
 
