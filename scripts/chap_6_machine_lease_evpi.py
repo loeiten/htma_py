@@ -1,5 +1,5 @@
-from src.distribution import Gaussian
 from src.continuous_evpi import get_evpi
+from src.distribution import Gaussian
 
 
 def main():
@@ -22,9 +22,13 @@ def main():
 
     payoff = (ms_sample + ls_sample + rms_sample) * pl_sample
     overall_evpi = get_evpi(payoff, threshold_payoff, n)
-    print(f"The overall EVPI is {overall_evpi:.0f}\tOverall threshold: {threshold_payoff:.0f}")
+    print(
+        f"The overall EVPI is {overall_evpi:.0f}\tOverall threshold: {threshold_payoff:.0f}"
+    )
 
-    print("\n" + "=" * 80 + "\nUsing method 1 where all variables are kept at the mean:")
+    print(
+        "\n" + "=" * 80 + "\nUsing method 1 where all variables are kept at the mean:"
+    )
     payoff_ms = (ms_sample + ls_mean + rms_mean) * pl_mean
     threshold_ms = (threshold_payoff / (pl_mean)) - ls_mean - rms_mean
     evpi_ms = get_evpi(payoff_ms, threshold_payoff, n)
@@ -41,11 +45,15 @@ def main():
     print(f"RMS EVPI is {evpi_rms:.0f}\tThreshold for mean RMS: {threshold_rms:.0f}")
 
     payoff_pl = (ms_mean + ls_mean + rms_mean) * pl_sample
-    threshold_pl = (threshold_payoff / ((ms_mean + ls_mean + rms_mean)))
+    threshold_pl = threshold_payoff / ((ms_mean + ls_mean + rms_mean))
     evpi_pl = get_evpi(payoff_pl, threshold_payoff, n)
     print(f"PL EVPI is {evpi_pl:.0f}\tThreshold for mean PL: {threshold_pl:.0f}")
 
-    print("\n" + "=" * 80 + "\nUsing method 2 where only one variable is assumed known (kept at mean):")
+    print(
+        "\n"
+        + "=" * 80
+        + "\nUsing method 2 where only one variable is assumed known (kept at mean):"
+    )
     payoff_ms = (ms_mean + ls_sample + rms_sample) * pl_sample
     evpi_ms = overall_evpi - get_evpi(payoff_ms, threshold_payoff, n)
     print(f"Individual MS EVPI: {evpi_ms:.0f}")

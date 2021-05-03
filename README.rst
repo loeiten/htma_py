@@ -66,4 +66,3 @@ The package can be installed from source
 .. code:: sh
 
    python setup.py install
-
