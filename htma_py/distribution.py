@@ -6,7 +6,7 @@ from typing import Union
 
 import numpy as np
 from scipy import stats
-from scipy.special import erfinv
+from scipy.special import erfinv  # pylint: disable=no-name-in-module
 
 
 class Distribution(ABC):
@@ -14,15 +14,55 @@ class Distribution(ABC):
 
     @abstractmethod
     def sample(self, n_points: int) -> np.array:
-        """Sample from the distribution."""
+        """
+        Sample from the distribution.
+
+        Parameters
+        ----------
+        n_points : int
+            How many samples to draw
+
+        Returns
+        -------
+        np.array
+            The drawn samples
+        """
 
     @abstractmethod
     def pdf(self, x_values: np.array) -> np.array:
-        """Return the probability density."""
+        """
+        Return the probability density.
+
+        Parameters
+        ----------
+        x_values : np.ndarray
+            Shape: (N,)
+            The values to get the probability density for
+
+        Returns
+        -------
+        ret : np.ndarray
+            Shape: (N,)
+            The probability density for the given x_values
+        """
 
     @abstractmethod
     def cdf(self, x_values: np.array) -> np.array:
-        """Return the cumulative probability density."""
+        """
+        Return the cumulative probability density.
+
+        Parameters
+        ----------
+        x_values : np.ndarray
+            Shape: (N,)
+            The values to get the cumulative probability density for
+
+        Returns
+        -------
+        ret : np.ndarray
+            Shape: (N,)
+            The cumulative probability density for the given x_values
+        """
 
     def incremental_probability(self, x_values: np.array) -> np.array:
         """
@@ -35,12 +75,14 @@ class Distribution(ABC):
 
         Parameters
         ----------
-        x_values : (N,) np.ndarray
+        x_values : np.ndarray
+            Shape: (N,)
             The values to get the incremental probability for
 
         Returns
         -------
-        ret : (N,) np.ndarray
+        ret : np.ndarray
+            Shape: (N,)
             The difference between two neighbouring cdf values
         """
         ret = np.zeros(x_values.size)
@@ -70,7 +112,9 @@ class Gaussian(Distribution):
             The confidence interval
         """
         # https://en.wikipedia.org/wiki/Standard_deviation#Rules_for_normally_distributed_data
-        self.sd = (upper_bound - lower_bound) / (2 * np.sqrt(2) * erfinv(ci))
+        self.standard_deviation = (upper_bound - lower_bound) / (
+            2 * np.sqrt(2) * erfinv(ci)
+        )
         self.mean = (upper_bound + lower_bound) / 2
 
     def sample(self, n_points: int = 1000) -> np.array:
@@ -85,10 +129,13 @@ class Gaussian(Distribution):
         Returns
         -------
         np.array
+            Shape: (n_points,)
             The drawn samples
         """
         # RVS - Random variates
-        return stats.norm.rvs(loc=self.mean, scale=self.sd, size=n_points)
+        return stats.norm.rvs(
+            loc=self.mean, scale=self.standard_deviation, size=n_points
+        )
 
     def pdf(self, x_values: np.array) -> np.array:
         """
@@ -96,15 +143,17 @@ class Gaussian(Distribution):
 
         Parameters
         ----------
-        x_values : (N,) np.ndarray
+        x_values : np.ndarray
+            Shape: (N,)
             The values to get the probability density for
 
         Returns
         -------
-        ret : (N,) np.ndarray
+        ret : np.ndarray
+            Shape: (N,)
             The probability density for the given x_values
         """
-        return stats.norm.pdf(x_values, loc=self.mean, scale=self.sd)
+        return stats.norm.pdf(x_values, loc=self.mean, scale=self.standard_deviation)
 
     def cdf(self, x_values: np.array) -> np.array:
         """
@@ -112,15 +161,17 @@ class Gaussian(Distribution):
 
         Parameters
         ----------
-        x_values : (N,) np.ndarray
+        x_values : np.ndarray
+            Shape: (N,)
             The values to get the cumulative probability density for
 
         Returns
         -------
-        ret : (N,) np.ndarray
+        ret : np.ndarray
+            Shape: (N,)
             The cumulative probability density for the given x_values
         """
-        return stats.norm.cdf(x_values, loc=self.mean, scale=self.sd)
+        return stats.norm.cdf(x_values, loc=self.mean, scale=self.standard_deviation)
 
 
 class DistributionFromData(Distribution):
@@ -136,7 +187,9 @@ class DistributionFromData(Distribution):
 
     References
     ----------
-    .. [1] https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html#kernel-density-estimation
+    .. [1]
+    https://docs.scipy.org/doc/scipy/reference/tutorial/stats.html#kernel-density-estimation
+
     .. [2] https://stackoverflow.com/q/37487830/2786884
     .. [3] https://stackoverflow.com/q/6620471/2786884
     """
@@ -162,6 +215,7 @@ class DistributionFromData(Distribution):
         Returns
         -------
         np.array
+            Shape: (n_points,)
             The drawn samples
         """
         return self.__kde.resample(n_points)
@@ -172,12 +226,14 @@ class DistributionFromData(Distribution):
 
         Parameters
         ----------
-        x_values : (N,) np.ndarray
+        x_values : np.ndarray
+            Shape: (N,)
             The values to get the probability density for
 
         Returns
         -------
-        ret : (N,) np.ndarray
+        ret : np.ndarray
+            Shape: (N,)
             The probability density for the given x_values
         """
         return self.__kde.evaluate(x_values)
@@ -188,12 +244,14 @@ class DistributionFromData(Distribution):
 
         Parameters
         ----------
-        x_values : (N,) np.ndarray
+        x_values : np.ndarray
+            Shape: (N,)
             The values to get the cumulative probability density for
 
         Returns
         -------
-        ret : (N,) np.ndarray
+        ret : np.ndarray
+            Shape: (N,)
             The cumulative probability density for the given x_values
         """
         return self.__kde.integrate_box_1d(self.__min_x_value, x_values)

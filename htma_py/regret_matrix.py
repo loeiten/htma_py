@@ -1,4 +1,4 @@
-"""Contains functions to work with opportunity loss (aka. regret) matrices"""
+"""Contains functions to work with regret (aka. opportunity loss) matrices."""
 
 import numpy as np
 
@@ -9,12 +9,14 @@ def get_regret_matrix(payoff_matrix: np.array) -> np.array:
 
     Parameters
     ----------
-    payoff_matrix : (choices, outcomes) np.ndarray
+    payoff_matrix : np.ndarray
+        Shape: (choices, outcomes)
         The payoff_matrix matrix
 
     Returns
     -------
-    regret_matrix : (choices, outcomes) np.ndarray
+    regret_matrix : np.ndarray
+        Shape: (choices, outcomes)
         The corresponding regret matrix
     """
     regret_matrix = np.full(payoff_matrix.shape, -1)
@@ -40,7 +42,8 @@ def evolve_one_probability_from_max_uncertainty(
 
     Returns
     -------
-    result : (n_choices, n_evolves) np.ndarray
+    result : np.ndarray
+        Shape: (n_choices, n_evolves)
         The matrix containing the evolutions
     """
     result = np.zeros((n_choices, n_evolves))

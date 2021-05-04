@@ -17,12 +17,12 @@ def main() -> None:
 
     plt.rc("figure", dpi=300)
     fig = plt.figure(figsize=(5, 3))
-    ax = fig.add_subplot(111)
-    ax.plot(hits, chance, "o")
-    ax.set_xlabel("Hits out of 10 possible")
-    ax.set_ylabel("Probability [%]")
-    ax.set_title("Chance of being 90 % calibrated")
-    ax.grid(True)
+    axis = fig.add_subplot(111)
+    axis.plot(hits, chance, "o")
+    axis.set_xlabel("Hits out of 10 possible")
+    axis.set_ylabel("Probability [%]")
+    axis.set_title("Chance of being 90 % calibrated")
+    axis.grid(True)
     fig.savefig(
         get_plot_path().joinpath("prob_calibrated.png"),
         transparent=True,

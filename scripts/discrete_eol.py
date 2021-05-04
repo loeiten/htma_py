@@ -1,11 +1,21 @@
+"""
+Calculate discrete expected opportunity loss.
+
+References
+----------
+https://www.youtube.com/watch?v=JehD3NcUKIY
+"""
+
 import numpy as np
-from src.regret_matrix import (
+
+from htma_py.regret_matrix import (
     evolve_one_probability_from_max_uncertainty,
     get_regret_matrix,
 )
 
 
-def main():
+def main() -> None:
+    """Calculate the expected opportunity loss."""
     payoff_ = np.array([[40, 45, 5], [70, 30, -13], [53, 45, -5]])
     regret_ = get_regret_matrix(payoff_)
     prob_distributions = evolve_one_probability_from_max_uncertainty(

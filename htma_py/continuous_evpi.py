@@ -15,7 +15,8 @@ def get_evpi(
 
     Parameters
     ----------
-    payoff_sample : (n_samples,) np.ndarray
+    payoff_sample : np.ndarray
+        Shape: (n_samples,)
         Samples of the payoff
     threshold_payoff : float
         The threshold where the payoff is considered a loss
@@ -43,14 +44,16 @@ def get_loss_array(payoff_lin_array: np.array, threshold_payoff: float) -> np.ar
 
     Parameters
     ----------
-    payoff_lin_array : (n_points_lin_array,) np.ndarray
+    payoff_lin_array : np.ndarray
+        Shape: (n_points_lin_array,)
         A linear array with the range of payoffs to calculate the loss for
     threshold_payoff : int
         The threshold for where the payoff is considered a loss
 
     Returns
     -------
-    loss_array : (n_points_lin_array,) np.ndarray
+    loss_array : np.ndarray
+        Shape: (n_points_lin_array,)
         The loss array
     """
     loss_array = threshold_payoff - payoff_lin_array
@@ -66,7 +69,8 @@ def get_payoff_dist_and_lin_array(
 
     Parameters
     ----------
-    payoff_sample : (n_samples,) np.ndarray
+    payoff_sample : np.ndarray
+        Shape: (n_samples,)
         Samples of the payoff
     n_points_lin_array : int
         Number of points to use in the linear array of payoffs
@@ -106,5 +110,5 @@ def calculate_evpi(
         The expected value of perfect information
     """
     incremental_prob_x_array = distribution.incremental_probability(x_values)
-    evpi = loss_array @ incremental_prob_x_array
+    evpi: float = loss_array @ incremental_prob_x_array
     return evpi
