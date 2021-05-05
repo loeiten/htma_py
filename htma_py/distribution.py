@@ -2,9 +2,10 @@
 
 
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Dict, Union
 
 import numpy as np
+import pandas as pd
 from scipy import stats
 from scipy.special import erfinv  # pylint: disable=no-name-in-module
 
@@ -89,7 +90,7 @@ class Distribution(ABC):
         ret[1:] = np.array(
             [
                 self.cdf(x_values[i]) - self.cdf(x_values[i - 1])
-                for i in range(0, x_values.size)
+                for i in range(1, x_values.size)
             ]
         )
         return ret
@@ -174,9 +175,9 @@ class Gaussian(Distribution):
         return stats.norm.cdf(x_values, loc=self.mean, scale=self.standard_deviation)
 
 
-class DistributionFromData(Distribution):
+class DistributionFromSamples(Distribution):
     """
-    Obtain the distribution from data and Gaussian KDE.
+    Obtain the distribution from samples and Gaussian KDE.
 
     Notes
     -----
@@ -194,14 +195,16 @@ class DistributionFromData(Distribution):
     .. [3] https://stackoverflow.com/q/6620471/2786884
     """
 
-    def __init__(self, data: np.array, min_x_value: Union[None, float] = None) -> None:
+    def __init__(
+        self, samples: np.array, min_x_value: Union[None, float] = None
+    ) -> None:
         """Compute the KDE."""
-        self.__data = data
+        self.__samples = samples
         if min_x_value is None:
-            self.__min_x_value = data.min()
+            self.__min_x_value = samples.min()
         else:
             self.__min_x_value = min_x_value
-        self.__kde = stats.gaussian_kde(self.__data)
+        self.__kde = stats.gaussian_kde(self.__samples)
 
     def sample(self, n_points: int = 1000) -> np.array:
         """
@@ -255,3 +258,29 @@ class DistributionFromData(Distribution):
             The cumulative probability density for the given x_values
         """
         return self.__kde.integrate_box_1d(self.__min_x_value, x_values)
+
+
+def get_samples(
+    distributions: Dict[str, Distribution], n_samples: float = 5e4
+) -> pd.DataFrame:
+    """
+    Get samples from distributions.
+
+    Parameters
+    ----------
+    distributions : dict of str, Distribution
+        Dictionary containing the names as keys and Distribution objects as values
+    n_samples : int
+        Number of samples to sample from the distributions
+
+    Returns
+    -------
+    samples_df : DataFrame
+        All the samples as a DataFrame
+    """
+    samples: Dict[str, np.array] = dict()
+    for dist_name in distributions.keys():
+        samples[dist_name] = distributions[dist_name].sample(int(n_samples))
+
+    samples_df = pd.DataFrame(samples)
+    return samples_df

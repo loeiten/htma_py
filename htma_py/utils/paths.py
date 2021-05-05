@@ -12,7 +12,7 @@ def get_root_path() -> Path:
     Path
         The path to the root directory
     """
-    return Path(__file__).absolute().parents[1]
+    return Path(__file__).absolute().parents[2]
 
 
 def get_plot_path() -> Path:
@@ -25,7 +25,7 @@ def get_plot_path() -> Path:
         The path to the plot directory
     """
     root_dir = get_root_path()
-    plot_dir = root_dir.joinpath("plot")
+    plot_dir = root_dir.joinpath("plots")
     if not plot_dir.is_dir():
         plot_dir.mkdir(parents=True, exist_ok=True)
     return plot_dir

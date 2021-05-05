@@ -22,7 +22,7 @@ def main() -> None:
     risk_pct = 100 * np.where(savings < 4e5)[0].size / n_samples
     print(
         f"The risk that the breakeven will not be met "
-        f"(the new machine lease is a loss) = {risk_pct:.0f} %"
+        f"(the new machine lease is a loss) = {risk_pct:.1f} %"
     )
 
 

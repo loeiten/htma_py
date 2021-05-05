@@ -1,11 +1,19 @@
 HTMA_py
 =======
 
-|lint| |python| |license| |code_style| |mypy| |bandit|
+ |python| |test| |codecov| |lint| |license| |code_style| |mypy| |bandit|
 
 .. |python| image:: https://img.shields.io/badge/python->=3.6-blue.svg
     :alt: supported python versions
     :target: https://www.python.org/
+
+.. |test| image:: https://github.com/loeiten/htma_py/workflows/Test/badge.svg?branch=main
+    :alt: test status
+    :target: https://github.com/loeiten/htma_py/actions?query=workflow%3A%22Test%22
+
+.. |codecov| image:: https://codecov.io/gh/loeiten/htma_py/branch/main/graph/badge.svg
+    :alt: codecov percentage
+    :target: https://codecov.io/gh/FIXME/FIXME
 
 .. |lint| image:: https://github.com/loeiten/htma_py/workflows/Lint/badge.svg?branch=main
     :alt: lint status
