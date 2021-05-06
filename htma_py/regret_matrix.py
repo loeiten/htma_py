@@ -3,15 +3,15 @@
 import numpy as np
 
 
-def get_regret_matrix(payoff_matrix: np.array) -> np.array:
+def get_regret_matrix(revenue_matrix: np.array) -> np.array:
     """
     Return the regret matrix.
 
     Parameters
     ----------
-    payoff_matrix : np.array
+    revenue_matrix : np.array
         Shape: (choices, outcomes)
-        The payoff_matrix matrix
+        The revenue_matrix matrix
 
     Returns
     -------
@@ -19,8 +19,8 @@ def get_regret_matrix(payoff_matrix: np.array) -> np.array:
         Shape: (choices, outcomes)
         The corresponding regret matrix
     """
-    regret_matrix = np.full(payoff_matrix.shape, -1)
-    for col_nr, col in enumerate(payoff_matrix.T):
+    regret_matrix = np.full(revenue_matrix.shape, -1)
+    for col_nr, col in enumerate(revenue_matrix.T):
         regret_matrix[:, col_nr] = col.max() - col
     return regret_matrix
 

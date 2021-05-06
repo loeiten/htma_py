@@ -30,8 +30,8 @@ def main() -> None:
     c_mean = variable_c.mean
     d_mean = variable_d.mean
 
-    payoff = price_per_unit * (a_sample + b_sample + c_sample) * d_sample
-    overall_evpi = get_evpi_from_samples(payoff, threshold_payoff, n_points_lin_array)
+    revenue = price_per_unit * (a_sample + b_sample + c_sample) * d_sample
+    overall_evpi = get_evpi_from_samples(revenue, threshold_payoff, n_points_lin_array)
     print(
         f"The overall EVPI is {overall_evpi:.0f}\tOverall threshold: "
         f"{threshold_payoff:.0f}"
@@ -40,24 +40,24 @@ def main() -> None:
     print(
         "\n" + "=" * 80 + "\nUsing method 1 where all variables are kept at the mean:"
     )
-    payoff_a = price_per_unit * (a_sample + b_mean + c_mean) * d_mean
+    revenue_a = price_per_unit * (a_sample + b_mean + c_mean) * d_mean
     threshold_a = (threshold_payoff / (price_per_unit * d_mean)) - b_mean - c_mean
-    evpi_a = get_evpi_from_samples(payoff_a, threshold_payoff, n_points_lin_array)
+    evpi_a = get_evpi_from_samples(revenue_a, threshold_payoff, n_points_lin_array)
     print(f"A EVPI is {evpi_a:.0f}\tThreshold for mean A: {threshold_a:.0f}")
 
-    payoff_b = price_per_unit * (a_mean + b_sample + c_mean) * d_mean
+    revenue_b = price_per_unit * (a_mean + b_sample + c_mean) * d_mean
     threshold_b = (threshold_payoff / (price_per_unit * d_mean)) - a_mean - c_mean
-    evpi_b = get_evpi_from_samples(payoff_b, threshold_payoff, n_points_lin_array)
+    evpi_b = get_evpi_from_samples(revenue_b, threshold_payoff, n_points_lin_array)
     print(f"B EVPI is {evpi_b:.0f}\tThreshold for mean B: {threshold_b:.0f}")
 
-    payoff_c = price_per_unit * (a_mean + b_mean + c_sample) * d_mean
+    revenue_c = price_per_unit * (a_mean + b_mean + c_sample) * d_mean
     threshold_c = (threshold_payoff / (price_per_unit * d_mean)) - a_mean - b_mean
-    evpi_c = get_evpi_from_samples(payoff_c, threshold_payoff, n_points_lin_array)
+    evpi_c = get_evpi_from_samples(revenue_c, threshold_payoff, n_points_lin_array)
     print(f"C EVPI is {evpi_c:.0f}\tThreshold for mean C: {threshold_c:.0f}")
 
-    payoff_d = price_per_unit * (a_mean + b_mean + c_mean) * d_sample
+    revenue_d = price_per_unit * (a_mean + b_mean + c_mean) * d_sample
     threshold_d = threshold_payoff / (price_per_unit * (a_mean + b_mean + c_mean))
-    evpi_d = get_evpi_from_samples(payoff_d, threshold_payoff, n_points_lin_array)
+    evpi_d = get_evpi_from_samples(revenue_d, threshold_payoff, n_points_lin_array)
     print(f"D EVPI is {evpi_d:.0f}\tThreshold for mean D: {threshold_d:.0f}")
 
     print(
@@ -65,27 +65,27 @@ def main() -> None:
         + "=" * 80
         + "\nUsing method 2 where only one variable is assumed known (kept at mean):"
     )
-    payoff_a = price_per_unit * (a_mean + b_sample + c_sample) * d_sample
+    revenue_a = price_per_unit * (a_mean + b_sample + c_sample) * d_sample
     evpi_a = overall_evpi - get_evpi_from_samples(
-        payoff_a, threshold_payoff, n_points_lin_array
+        revenue_a, threshold_payoff, n_points_lin_array
     )
     print(f"Individual A EVPI: {evpi_a:.0f}")
 
-    payoff_b = price_per_unit * (a_sample + b_mean + c_sample) * d_sample
+    revenue_b = price_per_unit * (a_sample + b_mean + c_sample) * d_sample
     evpi_b = overall_evpi - get_evpi_from_samples(
-        payoff_b, threshold_payoff, n_points_lin_array
+        revenue_b, threshold_payoff, n_points_lin_array
     )
     print(f"Individual B EVPI: {evpi_b:.0f}")
 
-    payoff_c = price_per_unit * (a_sample + b_sample + c_mean) * d_sample
+    revenue_c = price_per_unit * (a_sample + b_sample + c_mean) * d_sample
     evpi_c = overall_evpi - get_evpi_from_samples(
-        payoff_c, threshold_payoff, n_points_lin_array
+        revenue_c, threshold_payoff, n_points_lin_array
     )
     print(f"Individual C EVPI: {evpi_c:.0f}")
 
-    payoff_d = price_per_unit * (a_sample + b_sample + c_sample) * d_mean
+    revenue_d = price_per_unit * (a_sample + b_sample + c_sample) * d_mean
     evpi_d = overall_evpi - get_evpi_from_samples(
-        payoff_d, threshold_payoff, n_points_lin_array
+        revenue_d, threshold_payoff, n_points_lin_array
     )
     print(f"Individual D EVPI: {evpi_d:.0f}")
 

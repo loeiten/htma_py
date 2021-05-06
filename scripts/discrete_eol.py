@@ -16,19 +16,19 @@ from htma_py.regret_matrix import (
 
 def main() -> None:
     """Calculate the expected opportunity loss."""
-    payoff_ = np.array([[40, 45, 5], [70, 30, -13], [53, 45, -5]])
-    regret_ = get_regret_matrix(payoff_)
+    payoff = np.array([[40, 45, 5], [70, 30, -13], [53, 45, -5]])
+    regret = get_regret_matrix(payoff)
     prob_distributions = evolve_one_probability_from_max_uncertainty(
-        payoff_.shape[0], 0, 5
+        payoff.shape[0], 0, 5
     )
     print("\nPayoff matrix")
-    print(payoff_)
+    print(payoff)
     print("\nRegret matrix")
-    print(regret_)
+    print(regret)
     print("\nProbability distribution")
     print(prob_distributions)
     print("\nExpected opportunity loss")
-    print(regret_ @ prob_distributions)
+    print(regret @ prob_distributions)
 
 
 if __name__ == "__main__":

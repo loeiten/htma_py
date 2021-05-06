@@ -1,15 +1,16 @@
 """Contains functions for plotting."""
 
-from typing import Optional, Tuple, Dict, Any
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 from matplotlib import axes, figure
 from matplotlib import pyplot as plt
 from matplotlib import ticker
 
-
 # pylint: disable=useless-type-doc
 from htma_py.utils.paths import get_plot_path
+
+plt.rc("figure", dpi=300)
 
 
 def plot_histogram(
@@ -40,7 +41,9 @@ def plot_histogram(
     """
     fig = plt.figure(figsize=(5, 3))
     axis = fig.add_subplot(111)
-    counts, bins, patches = axis.hist(samples_from_distribution, bins=100, density=False, alpha=0.75)
+    counts, bins, patches = axis.hist(
+        samples_from_distribution, bins=100, density=False, alpha=0.75
+    )
     histogram_output = {"counts": counts, "bins": bins, "patches": patches}
     axis.set_xlabel(x_label)
     axis.set_ylabel("Number of hits in a bin")
@@ -48,7 +51,9 @@ def plot_histogram(
     return fig, axis, histogram_output
 
 
-def plot_loss(x_min: float, x_max: float, lin_loss_array: np.array, x_label: str) -> Tuple[figure.Figure, axes.Axes]:
+def plot_loss(
+    x_min: float, x_max: float, lin_loss_array: np.array, x_label: str
+) -> Tuple[figure.Figure, axes.Axes]:
     """
     Plot the loss function.
 
@@ -81,13 +86,27 @@ def plot_loss(x_min: float, x_max: float, lin_loss_array: np.array, x_label: str
     axis = make_axis_pretty(axis)
 
     # Make legend
-    legend = axis.legend(loc="best", fancybox=True, numpoints=1)
-    legend.get_frame().set_alpha(0.5)
+    make_legend(axis)
 
     return fig, axis
 
 
-def plot_bar(x_var: np.array, y_var: np.array, x_label: str, y_label: str, label: Optional[str]) -> Tuple[figure.Figure, axes.Axes]:
+def make_legend(axis: axes.Axes) -> None:
+    """
+    Make the legend.
+
+    Parameters
+    ----------
+    axis : axes.Axes
+        The axis object
+    """
+    legend = axis.legend(loc="best", fancybox=True, numpoints=1)
+    legend.get_frame().set_alpha(0.5)
+
+
+def plot_bar(
+    x_var: np.array, y_var: np.array, plot_properties: Optional[Dict[str, Any]] = None
+) -> Tuple[figure.Figure, axes.Axes]:
     """
     Plot a bar plot.
 
@@ -97,12 +116,22 @@ def plot_bar(x_var: np.array, y_var: np.array, x_label: str, y_label: str, label
         The minimum value for the dependant variable
     y_var : np.array
         The maximum value for the dependant variable
-    x_label : str
-        Name to put on the x-axis
-    y_label : str
-        Name to put on the x-axis
-    label : str
-        Label to put on the legend
+    plot_properties : dict of str
+        The plot properties consisting of
+        - x_label : str
+            - Name to put on the x-axis
+        - y_label : str
+            - Name to put on the x-axis
+        - label : str
+            - Label to put on the legend
+        - step : int
+            - Number of the steps used when plotting a slice of the data
+              step = 1 means that the original data will be plotted
+              step = 2 means that every second data point will be plotted etc
+        - color : str
+            - Color to use on the bar
+        - width : float
+            - Width of the bars
 
     Returns
     -------
@@ -111,15 +140,35 @@ def plot_bar(x_var: np.array, y_var: np.array, x_label: str, y_label: str, label
     axis : axes.Axes
         The axis object
     """
+    if plot_properties is None:
+        plot_properties = dict()
+    if "label" not in plot_properties.keys():
+        plot_properties["label"] = None
+    if "step" not in plot_properties.keys():
+        plot_properties["step"] = 1
+    if "color" not in plot_properties.keys():
+        plot_properties["color"] = "#1f77b4"
+    if "width" not in plot_properties.keys():
+        plot_properties["width"] = 0.1
+
     fig = plt.figure(figsize=(5, 3))
     axis = fig.add_subplot(111)
 
-    axis.plot(x_var, y_var, label=label)
-    axis.set_xlabel(x_label)
-    axis.set_ylabel(y_label)
+    bars = axis.bar(
+        x_var[:: plot_properties["step"]],
+        y_var[:: plot_properties["step"]],
+        color=plot_properties["color"],
+        label=plot_properties["label"],
+        width=plot_properties["width"],
+        alpha=0.75,
+    )
+    for patch in bars:
+        patch.set_color(plot_properties["color"])
+    axis.set_xlabel(plot_properties["x_label"])
+    axis.set_ylabel(plot_properties["y_label"])
     axis = make_axis_pretty(axis)
 
-    if label is not None:
+    if plot_properties["label"] is not None:
         # Make legend
         legend = axis.legend(loc="best", fancybox=True, numpoints=1)
         legend.get_frame().set_alpha(0.5)
