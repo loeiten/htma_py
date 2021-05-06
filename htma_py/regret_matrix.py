@@ -9,13 +9,13 @@ def get_regret_matrix(payoff_matrix: np.array) -> np.array:
 
     Parameters
     ----------
-    payoff_matrix : np.ndarray
+    payoff_matrix : np.array
         Shape: (choices, outcomes)
         The payoff_matrix matrix
 
     Returns
     -------
-    regret_matrix : np.ndarray
+    regret_matrix : np.array
         Shape: (choices, outcomes)
         The corresponding regret matrix
     """
@@ -42,7 +42,7 @@ def evolve_one_probability_from_max_uncertainty(
 
     Returns
     -------
-    result : np.ndarray
+    result : np.array
         Shape: (n_choices, n_evolves)
         The matrix containing the evolutions
     """

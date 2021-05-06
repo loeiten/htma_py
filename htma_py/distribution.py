@@ -36,13 +36,13 @@ class Distribution(ABC):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the probability density for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The probability density for the given x_values
         """
@@ -54,13 +54,13 @@ class Distribution(ABC):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the cumulative probability density for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The cumulative probability density for the given x_values
         """
@@ -76,13 +76,13 @@ class Distribution(ABC):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the incremental probability for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The difference between two neighbouring cdf values
         """
@@ -144,13 +144,13 @@ class Gaussian(Distribution):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the probability density for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The probability density for the given x_values
         """
@@ -162,13 +162,13 @@ class Gaussian(Distribution):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the cumulative probability density for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The cumulative probability density for the given x_values
         """
@@ -229,13 +229,13 @@ class DistributionFromSamples(Distribution):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the probability density for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The probability density for the given x_values
         """
@@ -247,13 +247,13 @@ class DistributionFromSamples(Distribution):
 
         Parameters
         ----------
-        x_values : np.ndarray
+        x_values : np.array
             Shape: (N,)
             The values to get the cumulative probability density for
 
         Returns
         -------
-        ret : np.ndarray
+        ret : np.array
             Shape: (N,)
             The cumulative probability density for the given x_values
         """

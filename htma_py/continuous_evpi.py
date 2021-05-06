@@ -15,7 +15,7 @@ def get_evpi_from_samples(
 
     Parameters
     ----------
-    payoff_sample : np.ndarray
+    payoff_sample : np.array
         Shape: (n_samples,)
         Samples of the payoff
     threshold_payoff : float
@@ -86,7 +86,7 @@ def get_lin_loss_array(lin_payoff_array: np.array, threshold_payoff: float) -> n
 
     Parameters
     ----------
-    lin_payoff_array : np.ndarray
+    lin_payoff_array : np.array
         Shape: (n_points_lin_array,)
         A linear array with the range of payoffs to calculate the loss for
     threshold_payoff : int
@@ -94,13 +94,42 @@ def get_lin_loss_array(lin_payoff_array: np.array, threshold_payoff: float) -> n
 
     Returns
     -------
-    lin_loss_array : np.ndarray
+    lin_loss_array : np.array
         Shape: (n_points_lin_array,)
         The loss array
     """
     lin_loss_array = threshold_payoff - lin_payoff_array
     lin_loss_array[lin_loss_array <= 0] = 0
     return lin_loss_array
+
+
+def get_eol_from_distribution(
+    distribution: Distribution, lin_x_values: np.array, lin_loss_array: np.array
+) -> np.array:
+    """
+    Calculate the expected value of perfect information given the distribution and loss.
+
+    Parameters
+    ----------
+    distribution : Distribution
+        The distribution to calculate the incremental probability from
+    lin_x_values : np.array
+        The points to calculate the incremental probability from
+    lin_loss_array : np.array
+        The loss array to calculate the EVPI from
+
+    Returns
+    -------
+    eol_from_distribution : np.array
+        The expected opportunity loss based on the distribution
+
+    See Also
+    --------
+    calculate_evpi : Preforms the same calculation as this function, but sums the EOL
+    """
+    incremental_prob_x_array = distribution.incremental_probability(lin_x_values)
+    eol_from_distribution = lin_loss_array * incremental_prob_x_array
+    return eol_from_distribution
 
 
 def calculate_evpi(
@@ -113,15 +142,19 @@ def calculate_evpi(
     ----------
     distribution : Distribution
         The distribution to calculate the incremental probability from
-    lin_x_values : np.ndarray
+    lin_x_values : np.array
         The points to calculate the incremental probability from
-    lin_loss_array : np.ndarray
+    lin_loss_array : np.array
         The loss array to calculate the EVPI from
 
     Returns
     -------
     evpi : float
         The expected value of perfect information
+
+    See Also
+    --------
+    get_eol_from_distribution : Preforms the same calculation as this, but does not sum the EOL
     """
     incremental_prob_x_array = distribution.incremental_probability(lin_x_values)
     evpi: float = lin_loss_array @ incremental_prob_x_array
@@ -134,7 +167,7 @@ def print_risk(payoff_samples: np.array, payoff_threshold: float) -> None:
 
     Parameters
     ----------
-    payoff_samples : np.ndarray
+    payoff_samples : np.array
         The sampled payoff
     payoff_threshold : float
         The threshold

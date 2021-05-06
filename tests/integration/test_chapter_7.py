@@ -13,6 +13,9 @@ def test_chapter_7_evpi():
     The EVPI is calculated both from an exact distribution and from a distribution
     generated from samples.
     """
+    # Fixing random state for reproducibility
+    np.random.seed(19680801)
+
     price_per_unit = 25
     threshold_units = 2.0e5
     lower_90_ci = 1.5e5

@@ -25,7 +25,7 @@ def main() -> None:
     rms_mean = raw_materials_savings_dist.mean
     pl_mean = production_level_dist.mean
 
-    payoff = (ms_sample + ls_sample + rms_sample) * pl_sample
+    revenue = (ms_sample + ls_sample + rms_sample) * pl_sample
     overall_evpi = get_evpi_from_samples(payoff, threshold_payoff, n_points_lin_array)
     print(
         f"The overall EVPI is {overall_evpi:.0f}\tOverall threshold: "
