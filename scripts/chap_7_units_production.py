@@ -12,11 +12,11 @@ from htma_py.continuous_evpi import (
     print_risk,
 )
 from htma_py.distribution import Distribution, Gaussian, get_samples
-from htma_py.plot import make_legend, plot_bar, plot_histogram, plot_loss, save_plot
+from htma_py.plots import make_legend, plot_bar, plot_histogram, plot_loss, save_plot
 
 
 def main() -> None:
-    """Calculate the EVPI for the units example."""
+    """Calculate the risk and EVPI for the units example."""
     price_per_unit = 25
     threshold_units = 2.0e5
     lower_90_ci = 1.5e5
@@ -158,7 +158,8 @@ def plot_loss_functions(
     price_per_unit : float
         Price per unit
     """
-    fig, axis = plot_loss(x_min, x_max, lin_loss_array, "Units")
+    lin_units_array = np.linspace(x_min, x_max, lin_loss_array.size)
+    fig, axis = plot_loss(lin_units_array, lin_loss_array, "Units")
     axis.axvline(
         x=threshold_units,
         linestyle="--",
@@ -170,9 +171,8 @@ def plot_loss_functions(
     make_legend(axis)
     save_plot(fig, "units_sold_units_loss_function.png")
 
-    fig, axis = plot_loss(
-        x_min * price_per_unit, x_max * price_per_unit, lin_loss_array, "Revenue [$]"
-    )
+    lin_revenue_array = lin_units_array * price_per_unit
+    fig, axis = plot_loss(lin_revenue_array, lin_loss_array, "Revenue [$]")
     axis.axvline(
         x=threshold_units * price_per_unit,
         linestyle="--",
@@ -183,6 +183,26 @@ def plot_loss_functions(
     )
     make_legend(axis)
     save_plot(fig, "units_sold_revenue_loss_function.png")
+
+    plot_properties = {
+        "x_label": "Revenue [$]",
+        "y_label": "Monetary loss [$]",
+        "label": "Loss function",
+        "color": "red",
+        "step": 40,
+        "width": 1e5,
+    }
+    fig, axis = plot_bar(lin_revenue_array, lin_loss_array, plot_properties)
+    axis.axvline(
+        x=threshold_units * price_per_unit,
+        linestyle="--",
+        color="k",
+        ymin=0,
+        ymax=1,
+        label="Payoff threshold",
+    )
+    make_legend(axis)
+    save_plot(fig, "units_sold_revenue_loss_function_bar.png")
 
 
 def plot_incremental_probability(
@@ -254,7 +274,7 @@ def plot_eol(
         "x_label": "Revenue [$]",
         "y_label": "EOL [$]",
         "label": "EOL of revenue",
-        "color": "red",
+        "color": "purple",
         "step": 40,
         "width": 1e5,
     }

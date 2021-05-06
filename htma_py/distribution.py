@@ -13,6 +13,11 @@ from scipy.special import erfinv  # pylint: disable=no-name-in-module
 class Distribution(ABC):
     """Abstract class for all Distributions."""
 
+    def __init__(self) -> None:
+        """Set mean and standard deviation."""
+        self.mean = np.nan
+        self.standard_deviation = np.nan
+
     @abstractmethod
     def sample(self, n_points: int) -> np.array:
         """
@@ -112,6 +117,7 @@ class Gaussian(Distribution):
         ci : float
             The confidence interval
         """
+        super().__init__()
         # https://en.wikipedia.org/wiki/Standard_deviation#Rules_for_normally_distributed_data
         self.standard_deviation = (upper_bound - lower_bound) / (
             2 * np.sqrt(2) * erfinv(ci)
@@ -199,6 +205,7 @@ class DistributionFromSamples(Distribution):
         self, samples: np.array, min_x_value: Union[None, float] = None
     ) -> None:
         """Compute the KDE."""
+        super().__init__()
         self.__samples = samples
         if min_x_value is None:
             self.__min_x_value = samples.min()

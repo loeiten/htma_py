@@ -17,35 +17,30 @@ def test_chapter_7_evpi():
     np.random.seed(19680801)
 
     price_per_unit = 25
-    threshold_units = 2.0e5
-    lower_90_ci = 1.5e5
-    upper_90_ci = 3.0e5
+    threshold_payoff = 2.0e5 * price_per_unit
+    lower_90_ci_revenue = 1.5e5 * price_per_unit
+    upper_90_ci_revenue = 3.0e5 * price_per_unit
 
-    # Note: These numbers are used in teh excel example
-    units_min = 0
-    units_max = 452963
+    # Note: These numbers are used in the excel example
+    revenue_min = 0 * price_per_unit
+    revenue_max = 452963 * price_per_unit
     n_points_lin_array = int(2e3)
 
-    # Calculate revenue parameters
-    threshold_payoff = price_per_unit * threshold_units
-
     lin_revenue_array, lin_loss_array = get_lin_revenue_and_loss(
-        units_min * price_per_unit,
-        units_max * price_per_unit,
+        revenue_min,
+        revenue_max,
         threshold_payoff,
         n_points_lin_array,
     )
 
-    revenue_gauss_dist = Gaussian(
-        lower_90_ci * price_per_unit, upper_90_ci * price_per_unit
-    )
+    revenue_gauss_dist = Gaussian(lower_90_ci_revenue, upper_90_ci_revenue)
     evpi_exact_gauss = calculate_evpi(
         revenue_gauss_dist, lin_revenue_array, lin_loss_array
     )
 
     # NOTE: We need a lot of samples in order for the test to pass
     units_data_dist = DistributionFromSamples(
-        revenue_gauss_dist.sample(int(1e5)), min_x_value=units_min * price_per_unit
+        revenue_gauss_dist.sample(int(1e5)), min_x_value=revenue_min
     )
     evpi_data_from_distribution = calculate_evpi(
         units_data_dist, lin_revenue_array, lin_loss_array

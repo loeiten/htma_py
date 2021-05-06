@@ -52,17 +52,15 @@ def plot_histogram(
 
 
 def plot_loss(
-    x_min: float, x_max: float, lin_loss_array: np.array, x_label: str
+    lin_x_array, lin_loss_array: np.array, x_label: str
 ) -> Tuple[figure.Figure, axes.Axes]:
     """
     Plot the loss function.
 
     Parameters
     ----------
-    x_min : float
-        The minimum value for the dependant variable
-    x_max : float
-        The maximum value for the dependant variable
+    lin_x_array : np.array
+        The linear x array
     lin_loss_array : np.array
         The loss array
     x_label : str
@@ -75,12 +73,10 @@ def plot_loss(
     axis : axes.Axes
         The axis object
     """
-    x_var = np.linspace(x_min, x_max, lin_loss_array.size)
-
     fig = plt.figure(figsize=(5, 3))
     axis = fig.add_subplot(111)
 
-    axis.plot(x_var, lin_loss_array, color="red", label="Loss function")
+    axis.plot(lin_x_array, lin_loss_array, color="red", label="Loss function")
     axis.set_xlabel(x_label)
     axis.set_ylabel("Monetary loss [$]")
     axis = make_axis_pretty(axis)
@@ -250,7 +246,7 @@ def plot_number_formatter(val: float, _: Optional[float], precision: int = 3) ->
     return tick_string
 
 
-def make_axis_pretty(axis: axes.Axes) -> axes.Axes:
+def make_axis_pretty(axis: axes.Axes, rotation: int = 45) -> axes.Axes:
     """
     Make the axis pretty.
 
@@ -258,6 +254,8 @@ def make_axis_pretty(axis: axes.Axes) -> axes.Axes:
     ----------
     axis : axes.Axes
         The axis object to beatify
+    rotation : int
+        Degrees of rotation
 
     Returns
     -------
@@ -268,7 +266,7 @@ def make_axis_pretty(axis: axes.Axes) -> axes.Axes:
     label_format = "{:,.0f}"
     x_ticks = axis.get_xticks().tolist()
     axis.xaxis.set_major_locator(ticker.FixedLocator(x_ticks))
-    axis.set_xticklabels([label_format.format(x) for x in x_ticks], rotation=45)
+    axis.set_xticklabels([label_format.format(x) for x in x_ticks], rotation=rotation)
     axis.get_yaxis().set_major_formatter(ticker.FuncFormatter(plot_number_formatter))
     axis.grid(True)
     return axis

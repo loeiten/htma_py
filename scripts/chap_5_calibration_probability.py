@@ -1,9 +1,9 @@
-"""Script plotting the chance of being 90 % calibrated."""
+"""Script plotting the chance of being 90 % calibrated (similar to exhibit 5.6)."""
 
 from matplotlib import pyplot as plt
 from scipy.stats import binom
 
-from htma_py.utils.paths import get_plot_path
+from htma_py.plots import make_axis_pretty, save_plot
 
 
 def main() -> None:
@@ -15,19 +15,14 @@ def main() -> None:
     # I.e.: If x was the case, what is the chance of this observation
     chance = [100 * binom.pmf(hit, target, probability_of_single_hit) for hit in hits]
 
-    plt.rc("figure", dpi=300)
     fig = plt.figure(figsize=(5, 3))
     axis = fig.add_subplot(111)
     axis.plot(hits, chance, "o")
     axis.set_xlabel("Hits out of 10 possible")
     axis.set_ylabel("Probability [%]")
     axis.set_title("Chance of being 90 % calibrated")
-    axis.grid(True)
-    fig.savefig(
-        get_plot_path().joinpath("prob_calibrated.png"),
-        transparent=True,
-        bbox_inches="tight",
-    )
+    make_axis_pretty(axis, rotation=0)
+    save_plot(fig, "calibration_probability.png")
 
 
 if __name__ == "__main__":
