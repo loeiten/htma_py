@@ -113,6 +113,7 @@ dist/
 *.bak.*
 *.log.*
 *.err
+bak/
 
 # Mac stuff
 *.DS_Store

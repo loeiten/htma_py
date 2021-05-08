@@ -2,9 +2,6 @@
 
 from typing import Dict
 
-import numpy as np
-from matplotlib.patches import Rectangle
-
 from htma_py.continuous_evpi import (
     calculate_evpi,
     get_eol_from_distribution,
@@ -12,7 +9,12 @@ from htma_py.continuous_evpi import (
     print_risk,
 )
 from htma_py.distribution import Distribution, Gaussian, get_samples
-from htma_py.plots import make_legend, plot_bar, plot_histogram, plot_loss, save_plot
+from htma_py.htma_plots.plots import (
+    plot_eol_with_threshold,
+    plot_loss_functions,
+    plot_pdf_cdf_and_incremental_probability,
+    plot_sample_histogram_with_threshold,
+)
 
 
 def main() -> None:
@@ -76,219 +78,21 @@ def main() -> None:
     evpi = calculate_evpi(distributions["Revenue"], lin_revenue_array, lin_loss_array)
     print(f"Expected value of perfect information for 'Revenue' variable: {evpi:.1f}\n")
 
-    plot_units_histogram(samples_df.loc[:, "Units"], threshold_units)
-    plot_loss_functions(
-        units_min, units_max, lin_loss_array, threshold_units, price_per_unit
+    plot_sample_histogram_with_threshold(
+        samples_df.loc[:, "Units"], threshold_units, "Units", "#", "units"
     )
-    plot_incremental_probability(
-        distributions["Revenue"], lin_revenue_array, threshold_payoff
+    plot_loss_functions(lin_revenue_array, lin_loss_array, threshold_payoff, "units")
+    plot_pdf_cdf_and_incremental_probability(
+        distributions["Revenue"], lin_revenue_array, threshold_payoff, "units"
     )
-    plot_eol(
-        distributions["Revenue"], lin_revenue_array, lin_loss_array, threshold_payoff
+    plot_eol_with_threshold(
+        get_eol_from_distribution(
+            distributions["Revenue"], lin_revenue_array, lin_loss_array
+        ),
+        lin_revenue_array,
+        threshold_payoff,
+        "units",
     )
-
-
-def plot_units_histogram(units_samples: np.array, threshold_units: float) -> None:
-    """
-    Plot the units histogram.
-
-    Parameters
-    ----------
-    units_samples : np.array
-        Samples of the produced units
-    threshold_units: float
-        The threshold for the units
-    """
-    fig, axis, histogram_output = plot_histogram(units_samples, "Units")
-    # Mark the threshold
-    # Mark probabilities with risk red
-    for cur_bin, patch in zip(histogram_output["bins"], histogram_output["patches"]):
-        if cur_bin < threshold_units:
-            patch.set_color("red")
-        else:
-            patch.set_color("green")
-
-    axis.axvline(
-        x=threshold_units,
-        linestyle="--",
-        color="k",
-        ymin=0,
-        ymax=1,
-        label="Payoff threshold",
-    )
-    handles, labels = axis.get_legend_handles_labels()
-
-    # Add legend for loss
-    handles.append(Rectangle((0, 0), 1, 1, color="red", alpha=0.75))
-    labels.append("Loss")
-
-    # Add legend for gain
-    handles.append(Rectangle((0, 0), 1, 1, color="green", alpha=0.75))
-    labels.append("Gain")
-
-    # Make legend
-    legend = axis.legend(
-        handles=handles, labels=labels, loc="best", fancybox=True, numpoints=1
-    )
-    legend.get_frame().set_alpha(0.5)
-
-    save_plot(fig, "units_sold_histogram.png")
-
-
-def plot_loss_functions(
-    x_min: float,
-    x_max: float,
-    lin_loss_array: np.array,
-    threshold_units: float,
-    price_per_unit: float,
-) -> None:
-    """
-    Plot the loss function.
-
-    Parameters
-    ----------
-    x_min : float
-        The minimum value for the dependant variable
-    x_max : float
-        The maximum value for the dependant variable
-    lin_loss_array : np.array
-        The loss array
-    threshold_units: float
-        The threshold for the units
-    price_per_unit : float
-        Price per unit
-    """
-    lin_units_array = np.linspace(x_min, x_max, lin_loss_array.size)
-    fig, axis = plot_loss(lin_units_array, lin_loss_array, "Units")
-    axis.axvline(
-        x=threshold_units,
-        linestyle="--",
-        color="k",
-        ymin=0,
-        ymax=1,
-        label="Payoff threshold",
-    )
-    make_legend(axis)
-    save_plot(fig, "units_sold_units_loss_function.png")
-
-    lin_revenue_array = lin_units_array * price_per_unit
-    fig, axis = plot_loss(lin_revenue_array, lin_loss_array, "Revenue [$]")
-    axis.axvline(
-        x=threshold_units * price_per_unit,
-        linestyle="--",
-        color="k",
-        ymin=0,
-        ymax=1,
-        label="Payoff threshold",
-    )
-    make_legend(axis)
-    save_plot(fig, "units_sold_revenue_loss_function.png")
-
-    plot_properties = {
-        "x_label": "Revenue [$]",
-        "y_label": "Monetary loss [$]",
-        "label": "Loss function",
-        "color": "red",
-        "step": 40,
-        "width": 1e5,
-    }
-    fig, axis = plot_bar(lin_revenue_array, lin_loss_array, plot_properties)
-    axis.axvline(
-        x=threshold_units * price_per_unit,
-        linestyle="--",
-        color="k",
-        ymin=0,
-        ymax=1,
-        label="Payoff threshold",
-    )
-    make_legend(axis)
-    save_plot(fig, "units_sold_revenue_loss_function_bar.png")
-
-
-def plot_incremental_probability(
-    revenue_distribution: Distribution,
-    lin_revenue_array: np.array,
-    threshold_payoff: float,
-) -> None:
-    """
-    Plot incremental probability.
-
-    Parameters
-    ----------
-    revenue_distribution : Distribution
-        The distribution of the revenue
-    lin_revenue_array : np.array
-        Linear array from min to max revenue
-    threshold_payoff: float
-        The threshold for the payoff
-    """
-    incremental_prob_revenue_array = revenue_distribution.incremental_probability(
-        lin_revenue_array
-    )
-    plot_properties = {
-        "x_label": "Revenue [$]",
-        "y_label": "Incremental probability",
-        "label": "IP of Revenue",
-        "step": 40,
-        "width": 1e5,
-    }
-    fig, axis = plot_bar(
-        lin_revenue_array, incremental_prob_revenue_array, plot_properties
-    )
-    axis.axvline(
-        x=threshold_payoff,
-        linestyle="--",
-        color="k",
-        ymin=0,
-        ymax=1,
-        label="Payoff threshold",
-    )
-    make_legend(axis)
-    save_plot(fig, "units_incremental_probability.png")
-
-
-def plot_eol(
-    revenue_distribution: Distribution,
-    lin_revenue_array: np.array,
-    lin_loss_array: np.array,
-    threshold_payoff: float,
-) -> None:
-    """
-    Plot expected opportunity loss.
-
-    Parameters
-    ----------
-    revenue_distribution : Distribution
-        The distribution of the revenue
-    lin_revenue_array : np.array
-        Linear array from min to max revenue
-    lin_loss_array : np.array
-        Linear array of loss from min to max
-    threshold_payoff: float
-        The threshold for the payoff
-    """
-    eol_from_distribution = get_eol_from_distribution(
-        revenue_distribution, lin_revenue_array, lin_loss_array
-    )
-    plot_properties = {
-        "x_label": "Revenue [$]",
-        "y_label": "EOL [$]",
-        "label": "EOL of revenue",
-        "color": "purple",
-        "step": 40,
-        "width": 1e5,
-    }
-    fig, axis = plot_bar(lin_revenue_array, eol_from_distribution, plot_properties)
-    axis.axvline(
-        x=threshold_payoff,
-        linestyle="--",
-        color="k",
-        ymin=0,
-        ymax=1,
-        label="Payoff threshold",
-    )
-    make_legend(axis)
-    save_plot(fig, "units_eol.png")
 
 
 if __name__ == "__main__":

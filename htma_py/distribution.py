@@ -2,12 +2,15 @@
 
 
 from abc import ABC, abstractmethod
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 
 import numpy as np
 import pandas as pd
+from matplotlib import axes, figure
 from scipy import stats
 from scipy.special import erfinv  # pylint: disable=no-name-in-module
+
+from htma_py.htma_plots.plots import plot_line
 
 
 class Distribution(ABC):
@@ -99,6 +102,62 @@ class Distribution(ABC):
             ]
         )
         return ret
+
+    def plot_pdf(
+        self, x_values: np.array, x_label: str
+    ) -> Tuple[figure.Figure, axes.Axes]:
+        """
+        Plot the PDF.
+
+        Parameters
+        ----------
+        x_values : np.array
+            Shape: (N,)
+            The values to get the cumulative probability density for
+        x_label : str
+            Name to put on the x-axis
+
+        Returns
+        -------
+        fig : figure.Figure
+            The figure object
+        axis : axes.Axes
+            The axis object
+        """
+        fig, axis = plot_line(
+            x_values,
+            self.pdf(x_values),
+            {"x_label": x_label, "y_label": f"PDF({x_label})", "label": "PDF"},
+        )
+        return fig, axis
+
+    def plot_cdf(
+        self, x_values: np.array, x_label: str
+    ) -> Tuple[figure.Figure, axes.Axes]:
+        """
+        Plot the CDF.
+
+        Parameters
+        ----------
+        x_values : np.array
+            Shape: (N,)
+            The values to get the cumulative probability density for
+        x_label : str
+            Name to put on the x-axis
+
+        Returns
+        -------
+        fig : figure.Figure
+            The figure object
+        axis : axes.Axes
+            The axis object
+        """
+        fig, axis = plot_line(
+            x_values,
+            self.cdf(x_values),
+            {"x_label": x_label, "y_label": f"CDF({x_label})", "label": "CDF"},
+        )
+        return fig, axis
 
 
 class Gaussian(Distribution):
@@ -264,7 +323,15 @@ class DistributionFromSamples(Distribution):
             Shape: (N,)
             The cumulative probability density for the given x_values
         """
-        return self.__kde.integrate_box_1d(self.__min_x_value, x_values)
+        if not hasattr(x_values, "__iter__"):
+            return self.__kde.integrate_box_1d(self.__min_x_value, x_values)
+
+        return np.array(
+            [
+                self.__kde.integrate_box_1d(self.__min_x_value, x_val)
+                for x_val in x_values
+            ]
+        )
 
 
 def get_samples(

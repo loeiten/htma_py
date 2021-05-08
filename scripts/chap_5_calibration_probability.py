@@ -3,7 +3,7 @@
 from matplotlib import pyplot as plt
 from scipy.stats import binom
 
-from htma_py.plots import make_axis_pretty, save_plot
+from htma_py.htma_plots.plot_helpers import make_axis_pretty, save_plot
 
 
 def main() -> None:

@@ -63,8 +63,10 @@ Any plots from the scripts will be stored in a directory called ``plots/`` locat
 Prerequisites
 -------------
 
-- ``numpy>=1.20.2``
-- ``scipy>=1.6.3``
+- ``numpy>=1.19.2``
+- ``scipy>=1.5.4``
+- ``pandas>=1.1.5``
+- ``matplotlib>=3.3.4``
 
 Installing
 ----------

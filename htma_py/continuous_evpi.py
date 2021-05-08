@@ -1,6 +1,6 @@
 """Functions for calculating continuous expected value of perfect information."""
 
-from typing import Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -8,13 +8,17 @@ from htma_py.distribution import Distribution, DistributionFromSamples
 
 
 def get_evpi_from_samples(
-    revenue_sample: np.array, threshold_payoff: float, n_points_lin_array: int
+    revenue_sample: np.array,
+    threshold_payoff: float,
+    n_points_lin_array: int,
+    revenue_min: Optional[float],
 ) -> float:
     """
     Return the expected value of perfect information given a threshold.
 
     Parameters
     ----------
+    revenue_min
     revenue_sample : np.array
         Shape: (n_samples,)
         Samples of the revenue
@@ -22,13 +26,16 @@ def get_evpi_from_samples(
         The threshold where the revenue is considered a loss
     n_points_lin_array : int
         Number of points to use in the linear array of revenues
+    revenue_min : None or float
+        The minimum revenue
 
     Returns
     -------
     evpi : float
         The expected value of perfect information
     """
-    revenue_min = revenue_sample.min()
+    if revenue_min is None:
+        revenue_min = revenue_sample.min()
     revenue_max = revenue_sample.max()
     lin_revenue_array, lin_loss_array = get_lin_revenue_and_loss(
         revenue_min, revenue_max, threshold_payoff, n_points_lin_array

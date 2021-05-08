@@ -1,12 +1,36 @@
-"""Replication of HTMA_3rd_Ch6-2.xlsx and calculation of EVPI for each variable."""
+"""
+Replication of HTMA_3rd_Ch6-2.xlsx and calculation of EVPI for each variable.
+
+Notes
+-----
+This example contains several variables.
+It could therefore be didactical to have a look at chap_7_units_production.py
+which goes through an example of only one variable.
+"""
 
 from typing import Dict, Union
 
 import numpy as np
 import pandas as pd
 
-from htma_py.continuous_evpi import get_evpi_from_samples, print_risk
-from htma_py.distribution import Distribution, Gaussian, get_samples
+from htma_py.continuous_evpi import (
+    get_eol_from_distribution,
+    get_evpi_from_samples,
+    get_lin_revenue_and_loss,
+    print_risk,
+)
+from htma_py.distribution import (
+    Distribution,
+    DistributionFromSamples,
+    Gaussian,
+    get_samples,
+)
+from htma_py.htma_plots.plots import (
+    plot_eol_with_threshold,
+    plot_loss_functions,
+    plot_pdf_cdf_and_incremental_probability,
+    plot_sample_histogram_with_threshold,
+)
 
 
 def main() -> None:
@@ -47,17 +71,51 @@ def main() -> None:
 
     # Calculate the overall EVPI
     overall_evpi = get_evpi_from_samples(
-        samples_df.loc[:, "Annual savings"], threshold_payoff, n_points_lin_array
+        samples_df.loc[:, "Annual savings"], threshold_payoff, n_points_lin_array, 0
     )
     print(
         f"The overall EVPI is {overall_evpi:.0f}\tOverall threshold: "
         f"{threshold_payoff:.0f}"
     )
-    calculate_method_1_evpi(
-        distributions, samples_df, threshold_payoff, n_points_lin_array
-    )
-    calculate_method_2_evpi(
+
+    # Print EVPI
+    print_method_1_evpi(distributions, samples_df, threshold_payoff, n_points_lin_array)
+    print_method_2_evpi(
         overall_evpi, distributions, samples_df, threshold_payoff, n_points_lin_array
+    )
+
+    # Obtain the linear arrays
+    lin_revenue_array, lin_loss_array = get_lin_revenue_and_loss(
+        samples_df.loc[:, "Annual savings"].min(),
+        samples_df.loc[:, "Annual savings"].max(),
+        threshold_payoff,
+        n_points_lin_array,
+    )
+
+    # Plot
+    annual_savings_dist = DistributionFromSamples(
+        samples_df.loc[:, "Annual savings"], min_x_value=0
+    )
+    plot_sample_histogram_with_threshold(
+        samples_df.loc[:, "Annual savings"],
+        threshold_payoff,
+        "Annual savings",
+        "$",
+        "machine_lease",
+    )
+    plot_loss_functions(
+        lin_revenue_array, lin_loss_array, threshold_payoff, "machine_lease"
+    )
+    plot_pdf_cdf_and_incremental_probability(
+        annual_savings_dist, lin_revenue_array, threshold_payoff, "machine_lease"
+    )
+    plot_eol_with_threshold(
+        get_eol_from_distribution(
+            annual_savings_dist, lin_revenue_array, lin_loss_array
+        ),
+        lin_revenue_array,
+        threshold_payoff,
+        "machine_lease",
     )
 
 
@@ -92,7 +150,7 @@ def calculate_annual_savings(
     return annual_savings
 
 
-def calculate_method_1_evpi(
+def print_method_1_evpi(
     distributions: Dict[str, Distribution],
     samples_df: pd.DataFrame,
     threshold_payoff: float,
@@ -139,12 +197,12 @@ def calculate_method_1_evpi(
             var_dict["Production level"],
         )
         evpi = get_evpi_from_samples(
-            annual_savings, threshold_payoff, n_points_lin_array
+            annual_savings, threshold_payoff, n_points_lin_array, 0
         )
         print(f"'{evpi_variable_name}' EVPI is {evpi:.0f}")
 
 
-def calculate_method_2_evpi(
+def print_method_2_evpi(
     overall_evpi: float,
     distributions: Dict[str, Distribution],
     samples_df: pd.DataFrame,
@@ -198,9 +256,11 @@ def calculate_method_2_evpi(
             var_dict["Production level"],
         )
         evpi = overall_evpi - get_evpi_from_samples(
-            annual_savings, threshold_payoff, n_points_lin_array
+            annual_savings, threshold_payoff, n_points_lin_array, 0
         )
         print(f"Individual '{evpi_variable_name}' EVPI is {evpi:.0f}")
+
+    print()
 
 
 if __name__ == "__main__":
