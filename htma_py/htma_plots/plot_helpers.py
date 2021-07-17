@@ -60,7 +60,7 @@ def plot_number_formatter(val: float, _: Optional[float], precision: int = 3) ->
     tick_string : str
         The string to use for the tick
     """
-    tick_string = f"{val:.{precision}g}"
+    tick_string = f"${val:.{precision}g}"
     check_for_period = False
     # Special case if 0.000x or 0.00x
     if "0.000" in tick_string:
