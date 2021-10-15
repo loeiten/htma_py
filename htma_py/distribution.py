@@ -352,7 +352,7 @@ def get_samples(
     samples_df : DataFrame
         All the samples as a DataFrame
     """
-    samples: Dict[str, np.array] = dict()
+    samples: Dict[str, np.array] = {}
     for dist_name in distributions.keys():
         samples[dist_name] = distributions[dist_name].sample(int(n_samples))
 

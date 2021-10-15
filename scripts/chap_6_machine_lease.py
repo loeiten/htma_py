@@ -181,7 +181,7 @@ def print_method_1_evpi(
         if evpi_variable_name == "Annual savings":
             continue
 
-        var_dict = dict()
+        var_dict = {}
 
         for variable_name in samples_df.columns.values:
             if variable_name != "Annual savings":
@@ -240,7 +240,7 @@ def print_method_2_evpi(
         if evpi_variable_name == "Annual savings":
             continue
 
-        var_dict = dict()
+        var_dict = {}
 
         for variable_name in samples_df.columns.values:
             if variable_name != "Annual savings":

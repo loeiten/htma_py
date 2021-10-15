@@ -60,23 +60,23 @@ def plot_number_formatter(val: float, _: Optional[float], precision: int = 3) ->
     tick_string : str
         The string to use for the tick
     """
-    tick_string = "${{:.{}g}}".format(precision).format(val)
+    tick_string = f"${val:.{precision}g}"
     check_for_period = False
     # Special case if 0.000x or 0.00x
     if "0.000" in tick_string:
         check_for_period = True
         tick_string = tick_string.replace("0.000", "")
         if tick_string[1] == "-":
-            tick_string = "{}.{}e-03".format(tick_string[0:3], tick_string[3:])
+            tick_string = f"{tick_string[0:3]}.{tick_string[3:]}e-03"
         else:
-            tick_string = "{}.{}e-03".format(tick_string[0:2], tick_string[2:])
+            tick_string = f"{tick_string[0:2]}.{tick_string[2:]}e-03"
     elif "0.00" in tick_string:
         check_for_period = True
         tick_string = tick_string.replace("0.00", "")
         if tick_string[1] == "-":
-            tick_string = "{}.{}e-02".format(tick_string[0:3], tick_string[3:])
+            tick_string = f"{tick_string[0:3]}.{tick_string[3:]}e-02"
         else:
-            tick_string = "{}.{}e-02".format(tick_string[0:2], tick_string[2:])
+            tick_string = f"{tick_string[0:2]}.{tick_string[2:]}e-02"
     if check_for_period:
         # The last character before e-0x should not be a period
         if len(tick_string) > 5 and tick_string[-5] == ".":

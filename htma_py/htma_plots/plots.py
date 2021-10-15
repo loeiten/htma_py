@@ -49,7 +49,7 @@ def plot_line(
         The axis object
     """
     if line_plot_properties is None:
-        line_plot_properties = dict()
+        line_plot_properties = {}
     if "label" not in line_plot_properties.keys():
         line_plot_properties["label"] = None
 
@@ -99,7 +99,7 @@ def plot_bar(
         The axis object
     """
     if bar_plot_properties is None:
-        bar_plot_properties = dict()
+        bar_plot_properties = {}
     if "label" not in bar_plot_properties.keys():
         bar_plot_properties["label"] = None
     if "color" not in bar_plot_properties.keys():
